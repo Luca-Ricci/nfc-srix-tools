@@ -24,6 +24,7 @@ make
 * `srix-read` - Read dump file
 * `srix-restore` - Restore dump to tag
 * `srix-reset` - Reset OTP bits
+* `srix-countdown` - Count down counter -1
 
 ## Examples
 ### srix-dump
@@ -81,6 +82,16 @@ Options:
 Usage:
 ```text
 Usage: ./srix-reset [-h] [-v]
+
+Options:
+  -h           show this help message
+  -v           enable verbose - print debugging data
+```
+
+### srix-countdown
+Usage:
+```text
+Usage: ./srix-countdown [-h] [-v]
 
 Options:
   -h           show this help message
