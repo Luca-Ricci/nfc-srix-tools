@@ -143,11 +143,6 @@ int main(int argc, char *argv[], char *envp[]) {
     block_6 = (otp_blocks[5] << 24u) | (otp_blocks[5] << 16u) | (otp_blocks[5] << 8u) | otp_blocks[5];
 
     // Show differences
-    printf("[%02X] %08X -> FFFFFFFF\n", 0x00, otp_blocks[0]);
-    printf("[%02X] %08X -> FFFFFFFF\n", 0x01, otp_blocks[1]);
-    printf("[%02X] %08X -> FFFFFFFF\n", 0x02, otp_blocks[2]);
-    printf("[%02X] %08X -> FFFFFFFF\n", 0x03, otp_blocks[3]);
-    printf("[%02X] %08X -> FFFFFFFF\n", 0x04, otp_blocks[4]);
     printf("[%02X] %08X -> %08X\n", 0x06, otp_blocks[5], block_6);
 
     // Ask for confirmation
