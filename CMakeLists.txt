@@ -24,3 +24,7 @@ target_link_libraries(srix-restore ${LIBNFC_LIBRARIES})
 # srix-reset
 add_executable(srix-reset otp_reset.c logging.c nfc_utils.c)
 target_link_libraries(srix-reset ${LIBNFC_LIBRARIES})
+
+# srix-countdown
+add_executable(srix-countdown update_countdown.c logging.c nfc_utils.c)
+target_link_libraries(srix-countdown ${LIBNFC_LIBRARIES})
