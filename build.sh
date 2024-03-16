@@ -11,10 +11,11 @@ cmake ../../
 make
 
 # Copy executables
-mv srix-dump ../
-mv srix-read ../
-mv srix-reset ../
-mv srix-restore ../
+mv srix-readTag ../
+mv srix-readDump ../
+mv srix-writeTag ../
+mv srix-resetTag ../
+mv srix-updateCdown ../
 
 # Cleanup
 cd ../
