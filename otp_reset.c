@@ -1,5 +1,9 @@
 /*
- * Copyright 2019-2020 Giacomo Ferretti
+ * Code based totally on Giacomo Ferretti's incredible work.
+ * The changes you will find compared to his codes have been
+ * made only for personal convenience and ease of use which
+ * I hope will help you too. 
+ *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +140,7 @@ int main(int argc, char *argv[], char *envp[]) {
     lverbose("Reading 6 blocks...\n");
     for (uint8_t i = 0; i < 6; i++) {
         // Skip block 0x05
+        //THIS SKIP BLOCK OXO6
         if (i == 5) i++;
 
         uint8_t block_bytes[4] = {};
