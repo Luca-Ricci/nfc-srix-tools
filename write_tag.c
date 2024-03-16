@@ -1,5 +1,9 @@
 /*
- * Copyright 2019-2020 Giacomo Ferretti
+ * Code based totally on Giacomo Ferretti's incredible work.
+ * The changes you will find compared to his codes have been
+ * made only for personal convenience and ease of use which
+ * I hope will help you too. 
+ *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
