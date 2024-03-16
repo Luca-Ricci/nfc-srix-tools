@@ -41,6 +41,7 @@ Options:
   -v           enable verbose - print debugging data
   -i           print UID and system block
   -r           fix read direction
+  -o file.bin  save data to file.bin
   -t x4k|512   select SRIX4K or SRI512 tag type [default: x4k]
 ```
 
