@@ -5,7 +5,7 @@ A repository containing tools to read/write NFC ST SRI512 and SRIX4K tags.
 * On 32bit machines, it should give an error
 
 ## TODOs
-* Complete rewrite (I made it a year and never wrote in C before)
+* Change reset-otp function
 
 ## Prerequisites
 * [libnfc](https://github.com/nfc-tools/libnfc)
@@ -20,39 +20,34 @@ make
 ```
 
 ## Tools
-* `srix-dump` - Dump EEPROM to file
-* `srix-read` - Read dump file
-* `srix-restore` - Restore dump to tag
+* `srix-readTag` - read tag EEPROM, can choose to save it on file
+* `srix-readDump` - Read dump file
+* `srix-writeTag` - Write dump file to tag
 * `srix-reset` - Reset OTP bits
-* `srix-countdown` - Count down counter -1
+* `srix-countdown` - Count down counter bits -=-1
 
 ## Examples
 ### srix-dump
-Dump to console: `./srix-dump`
+Dump to console: `./srix-readTag`
 
-Dump to file: `./srix-dump file.bin`
+Dump to file: `./srix-readTag -o file.bin`
 
 Usage:
 ```text
-Usage: ./srix-dump [dump.bin] [-h] [-v] [-u] [-s] [-a] [-r] [-t x4k|512]
-
-Optional arguments:
-  [dump.bin]   dump EEPROM to file
+Usage: ./srix-dump [dump.bin] [-h] [-v] [-i] [-r] [-o file.bin] [-t x4k|512]
 
 Options:
   -h           show this help message
   -v           enable verbose - print debugging data
-  -s           print system block
-  -u           print UID
-  -a           enable -s and -u flags together
+  -i           print UID and system block
   -r           fix read direction
   -t x4k|512   select SRIX4K or SRI512 tag type [default: x4k]
 ```
 
-### srix-read
+### srix-readDump
 Usage:
 ```text
-Usage: ./srix-read <dump.bin> [-h] [-v] [-c 1|2] [-t x4k|512]
+Usage: ./srix-readDump <dump.bin> [-h] [-v] [-c 1|2] [-t x4k|512]
 
 Necessary arguments:
   <dump.bin>   path to the dump file
@@ -64,10 +59,10 @@ Options:
   -t x4k|512   select SRIX4K or SRI512 tag type [default: x4k]
 ```
 
-### srix-restore
+### srix-writeTag
 Usage:
 ```text
-Usage: ./srix-restore <dump.bin> [-h] [-v] [-t x4k|512]
+Usage: ./srix-writeTag <dump.bin> [-h] [-v] [-t x4k|512]
 
 Necessary arguments:
   <dump.bin>   path to the dump file
@@ -78,20 +73,20 @@ Options:
   -t x4k|512   select SRIX4K or SRI512 tag type [default: x4k]
 ```
 
-### srix-reset
+### srix-resetTag
 Usage:
 ```text
-Usage: ./srix-reset [-h] [-v]
+Usage: ./srix-resetTag [-h] [-v]
 
 Options:
   -h           show this help message
   -v           enable verbose - print debugging data
 ```
 
-### srix-countdown
+### srix-updateCdown
 Usage:
 ```text
-Usage: ./srix-countdown [-h] [-v]
+Usage: ./srix-updateCdown [-h] [-v]
 
 Options:
   -h           show this help message
