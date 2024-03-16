@@ -1,7 +1,8 @@
 /*
- * Made by editing Giacomo Ferretti "otp_reset.c" program
- *
- * Copyright 2023-2024 Luca Ricci
+ * Code based totally on Giacomo Ferretti's incredible work.
+ * The changes you will find compared to his codes have been
+ * made only for personal convenience and ease of use which
+ * I hope will help you too. 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,17 +134,35 @@ int main(int argc, char *argv[], char *envp[]) {
         }
     }
 
-    uint32_t block_6 = (otp_blocks[5] << 24u) | (otp_blocks[5] << 16u) | (otp_blocks[5] << 8u) | otp_blocks[5];
-    printf("OTP resets available: %u\n", block_6 >> 21u);
+    // Read necessary blocks
+    uint32_t Current_CDown_block = 0;
+    uint32_t Lowered_CDown_block = 0;
 
-    block_6 -= (1u << 21u);
-    printf("OTP resets remaining after this operation: %u\n", block_6 >> 21u);
+    lverbose("Reading 6 blocks...\n");
 
-    // Reverse
-    block_6 = (otp_blocks[5] << 24u) | (otp_blocks[5] << 16u) | (otp_blocks[5] << 8u) | otp_blocks[5];
+        uint8_t block_bytes[4] = {};
+        uint8_t block_bytes_read = nfc_srix_read_block(reader, block_bytes, 5);
 
-    // Show differences
-    printf("[%02X] %08X -> %08X\n", 0x06, otp_blocks[5], block_6);
+        Current_CDown_block = (block_bytes[0]) << 24u | block_bytes[1] << 16u | block_bytes[2] << 8u | block_bytes[3];
+
+        //find the value to lower down.
+        for (uint8_t i = 0; i < 5; i++) {
+            if (block_bytes[i] != 0xFF && block_bytes[0] != 0xFF){
+                block_bytes[i]=block_bytes[i]-1;
+            }
+        }
+
+        // Check for errors
+        if (block_bytes_read != 4) {
+            lerror("Error while reading block %d. Exiting...\n", 5);
+            lverbose("Received %d bytes instead of 4.\n", block_bytes_read);
+            close_nfc(context, reader);
+            exit(1);
+        }
+
+        Lowered_CDown_block = (block_bytes[0]) << 24u | block_bytes[1] << 16u | block_bytes[2] << 8u | block_bytes[3];
+        printf("[05] %08X -> %08X\n",Current_CDown_block, Lowered_CDown_block);
+        printf("CDown uses available: %u\n", Lowered_CDown_block >> 21u);
 
     // Ask for confirmation
     if (!skip_confirmation) {
@@ -156,9 +175,8 @@ int main(int argc, char *argv[], char *envp[]) {
             exit(0);
         }
     }
-
     // Write Block 06 first to trigger an Auto erase cycle
-    nfc_write_block(reader, block_6, 0x06);
+    nfc_write_block(reader, Lowered_CDown_block, 0x05);
 
     // Close NFC
     close_nfc(context, reader);
