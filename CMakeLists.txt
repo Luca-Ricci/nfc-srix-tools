@@ -9,22 +9,22 @@ include_directories(${LIBNFC_INCLUDE_DIRS})
 link_directories(${LIBNFC_LIBRARY_DIRS})
 add_definitions(${LIBNFC_CFLAGS_OTHER})
 
-# srix-dump
-add_executable(srix-dump dump_tag.c logging.c nfc_utils.c)
-target_link_libraries(srix-dump ${LIBNFC_LIBRARIES})
+#. srix-readTag
+add_executable(srix-readTag read_tag.c logging.c nfc_utils.c)
+target_link_libraries(srix-readTag ${LIBNFC_LIBRARIES})
 
-# srix-read
-add_executable(srix-read read_dump.c logging.c nfc_utils.c)
-target_link_libraries(srix-read ${LIBNFC_LIBRARIES})
+#. srix-readDump
+add_executable(srix-readDump read_dump.c logging.c nfc_utils.c)
+target_link_libraries(srix-readDump ${LIBNFC_LIBRARIES})
 
-# srix-restore
-add_executable(srix-restore restore_dump.c logging.c nfc_utils.c)
-target_link_libraries(srix-restore ${LIBNFC_LIBRARIES})
+# srix-writeTag
+add_executable(srix-writeTag write_tag.c logging.c nfc_utils.c)
+target_link_libraries(srix-writeTag ${LIBNFC_LIBRARIES})
 
-# srix-reset
-add_executable(srix-reset otp_reset.c logging.c nfc_utils.c)
-target_link_libraries(srix-reset ${LIBNFC_LIBRARIES})
+# srix-resetTag
+add_executable(srix-resetTag otp_reset.c logging.c nfc_utils.c)
+target_link_libraries(srix-resetTag ${LIBNFC_LIBRARIES})
 
-# srix-countdown
-add_executable(srix-countdown update_countdown.c logging.c nfc_utils.c)
-target_link_libraries(srix-countdown ${LIBNFC_LIBRARIES})
+# srix-updateCdown
+add_executable(srix-updateCdown update_countdown.c logging.c nfc_utils.c)
+target_link_libraries(srix-updateCdown ${LIBNFC_LIBRARIES})
