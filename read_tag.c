@@ -1,5 +1,8 @@
 /*
- * Copyright 2019-2020 Giacomo Ferretti
+ * Code based totally on Giacomo Ferretti's incredible work.
+ * The changes you will find compared to his codes have been
+ * made only for personal convenience and ease of use which
+ * I hope will help you too. 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +27,17 @@
 #include "logging.h"
 #include "nfc_utils.h"
 
+//Unificate le opzioni -u -s e -a con l'opzione -i (info)
+//Aggiunta l'opzione per salvare su file con -o
 static void print_usage(const char *executable) {
-    printf("Usage: %s [dump.bin] [-h] [-v] [-u] [-s] [-a] [-r] [-y] [-t x4k|512]\n", executable);
+    printf("Usage: %s [-h] [-v] [-i] [-r] [-o filename.bin] [-t x4k|512]\n", executable);
     printf("\nOptional arguments:\n");
-    printf("  [dump.bin]   dump EEPROM to file\n");
     printf("\nOptions:\n");
     printf("  -h           show this help message\n");
     printf("  -v           enable verbose - print debugging data\n");
-    printf("  -s           print system block\n");
-    printf("  -u           print UID\n");
-    printf("  -a           enable -s and -u flags together\n");
-    printf("  -r           fix read direction\n");
-    printf("  -y           answer YES to all questions\n");
+    printf("  -i           print UID and system block\n");
+    printf("  -r           mirror read direction\n");
+    printf("  -o filename.bin saves the read data in a file named filename.bin\n");
     printf("  -t x4k|512   select SRIX4K or SRI512 tag type [default: x4k]\n");
 }
 
@@ -44,32 +46,28 @@ int main(int argc, char *argv[], char *envp[]) {
     bool print_uid = false;
     bool fix_read_direction = false;
     bool skip_confirmation = false;
+    bool save_file = false;
     char *output_path = NULL;
     uint32_t eeprom_size = SRIX4K_EEPROM_SIZE;
     uint32_t eeprom_blocks_amount = SRIX4K_EEPROM_BLOCKS;
 
     // Parse options
     int opt = 0;
-    while ((opt = getopt(argc, argv, "hvusaryt:")) != -1) {
+    while ((opt = getopt(argc, argv, "hviryo:t:")) != -1) {
         switch (opt) {
             case 'v':
                 set_verbose(true);
                 break;
-            case 'a':
+            case 'i':
                 print_system_block = true;
-                print_uid = true;
-                break;
-            case 's':
-                print_system_block = true;
-                break;
-            case 'u':
                 print_uid = true;
                 break;
             case 'r':
                 fix_read_direction = true;
                 break;
-            case 'y':
-                skip_confirmation = true;
+            case 'o':
+                save_file = true;
+                output_path = optarg;
                 break;
             case 't':
                 if (strcmp(optarg, "512") == 0) {
@@ -82,11 +80,6 @@ int main(int argc, char *argv[], char *envp[]) {
                 print_usage(argv[0]);
                 exit(0);
         }
-    }
-
-    // Check arguments
-    if ((argc - optind) > 0) {
-        output_path = argv[optind];
     }
 
     // Initialize NFC
@@ -151,7 +144,6 @@ int main(int argc, char *argv[], char *envp[]) {
      * https://github.com/nfc-tools/libnfc/issues/436#issuecomment-326686914
      */
     lverbose("Searching for ISO14443B targets... found %d.\n", nfc_initiator_list_passive_targets(reader, nmISO14443B, target_key, MAX_TARGET_COUNT));
-
     lverbose("Searching for ISO14443B2SR targets...");
     int ISO14443B2SR_targets = nfc_initiator_list_passive_targets(reader, nmISO14443B2SR, target_key, MAX_TARGET_COUNT);
     lverbose(" found %d.\n", ISO14443B2SR_targets);
@@ -241,11 +233,9 @@ int main(int argc, char *argv[], char *envp[]) {
         }
 
         printf("[%02X] ", i);
-        if (fix_read_direction) {
-            printf("%02X %02X %02X %02X ", current_block[3], current_block[2], current_block[1], current_block[0]);
-        } else {
-            printf("%02X %02X %02X %02X ", current_block[0], current_block[1], current_block[2], current_block[3]);
-        }
+        if (fix_read_direction){printf("%02X %02X %02X %02X ", current_block[3], current_block[2], current_block[1], current_block[0]);}
+        else {printf("%02X %02X %02X %02X ", current_block[0], current_block[1], current_block[2], current_block[3]);}
+        
         printf(DIM);
         printf("--- %s\n", srix_get_block_type(i));
         printf(RESET);
@@ -294,36 +284,36 @@ int main(int argc, char *argv[], char *envp[]) {
         }
     }
 
-    // Check if file already exists
-    FILE *file = fopen(output_path, "r");
-    if (file) {
-        fclose(file);
 
-        // Ask for confirmation
-        if (!skip_confirmation) {
+    if (save_file)
+    {   
+        // Check if file already exists
+        FILE *file = fopen(output_path, "r");
+        if (file)
+        {
+            fclose(file);
             printf("\"%s\" already exists.\n", output_path);
             printf("Do you want to overwrite it? [Y/N] ");
             char c = 'n';
             scanf(" %c", &c);
-            if (c != 'Y' && c != 'y') {
+            if (c != 'Y' && c != 'y')
+            {
                 printf("Exiting...\n");
                 close_nfc(context, reader);
                 exit(0);
             }
         }
-    }
 
-    // Dump to file
-    if (output_path != NULL) {
-        FILE *fp = fopen(output_path, "w");
-        fwrite(eeprom_bytes, eeprom_size, 1, fp);
-        fclose(fp);
-
-        printf("Written dump to \"%s\".\n", output_path);
+        if (output_path != NULL)
+        {
+            FILE *fp = fopen(output_path, "w");
+            fwrite(eeprom_bytes, eeprom_size, 1, fp);
+            fclose(fp);
+            printf("Written dump to \"%s\".\n", output_path);
+        }
     }
 
     // Close NFC
     close_nfc(context, reader);
-
     return 0;
 }
